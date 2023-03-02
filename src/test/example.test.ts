@@ -4,7 +4,8 @@ describe('test describe', () => {
             await browser.url(`http://google.com/`)
         }
 
-        await open()      
+        await open()
         await browser.pause(5000)
     })
 })
+//коммент
