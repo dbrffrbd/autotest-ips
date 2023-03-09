@@ -1,12 +1,15 @@
 class Car {
     private engine: string = 'Off'
-    public turnOn() {
+
+    public turnOn(): void {
         this.engine = 'On'
     }
-    public turnOff() {
+
+    public turnOff(): void {
         this.engine = 'Off'
     }
-    public getState() {
+
+    public getState(): void {
         console.log(this.engine)
     }
 }

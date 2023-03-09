@@ -17,7 +17,7 @@ const groupStudents: Student[] = [
     { name: 'Нина', age: 18 }
 ]
 
-groupStudents.forEach(student => {
+groupStudents.forEach((student: Student) => {
     console.log(`Имя студента: | Возраст:`)
     console.log(`${student.name}  |  ${student.age}`)
 })
