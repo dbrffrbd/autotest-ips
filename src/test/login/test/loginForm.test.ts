@@ -1,4 +1,4 @@
-import { LOGIN, EMAIL, PASSWORD } from "../../../credentials"
+import { LOGIN, EMAIL, PASSWORD } from "../../../../credentials"
 
 describe('Login form test', async () => {
     beforeEach(async () => {
@@ -76,7 +76,7 @@ describe('Login form test', async () => {
         expect(await browser.$('//*[@id="js-flash-container"]').isDisplayed()).toEqual(true)
     })
 
-    it('User should not be log in', async () => {
+    it('User should not be log in. Password is not filled', async () => {
         await browser.$('//*[@id="login_field"]').waitForDisplayed({
             timeoutMsg: 'Login field was not displayed'
         })
