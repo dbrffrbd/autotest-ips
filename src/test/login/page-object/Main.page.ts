@@ -8,15 +8,6 @@ class MainPage {
         this.browser = browser
     }
 
-    //: ChainablePromiseElement<Promise<WebdriverIO.Element>> 
-    private getUserAvatar() {
-        return this.browser.$('//summary//*[contains(@class, "avatar")]')
-    }
-
-    private getUserLogin() {
-        return this.browser.$('//*[@class="css-truncate-target"]')
-    }
-
     public getUserLoginText(): Promise<string> {
         return this.getUserLogin().getText()
     }
@@ -28,8 +19,15 @@ class MainPage {
         await this.getUserAvatar().click()
         await this.getUserLoginText()
     }
-}
 
+    private getUserAvatar(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//summary//*[contains(@class, "avatar")]')
+    }
+
+    private getUserLogin(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[@class="css-truncate-target"]')
+    }
+}
 export {
     MainPage,
 }

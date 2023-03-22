@@ -30,17 +30,17 @@ describe('Login form', () => {
     })
 
     it('User should not be log in. Invalid email', async () => {
-        const INVALID_EMAIL = '@123'
-        await loginPage.invalidLogin(INVALID_EMAIL, PASSWORD)
+        const invalidEmail = '@123'
+        await loginPage.invalidLogin(invalidEmail, PASSWORD)
 
-        expect(await loginPage.getErrorMassage().isDisplayed()).toEqual(true)
+        expect(await loginPage.massageDisplayed()).toEqual(true)
     })
 
     it('User should not be log in. Password is not filled', async () => {
-        const INVALID_PASSWORD = ''
-        await loginPage.invalidLogin(EMAIL, INVALID_PASSWORD)
+        const invalidPassword = ''
+        await loginPage.invalidLogin(EMAIL, invalidPassword)
 
-        expect(await loginPage.getErrorMassage().isDisplayed()).toEqual(true)
+        expect(await loginPage.massageDisplayed()).toEqual(true)
     })
 
     afterEach(async () => {

@@ -1,5 +1,5 @@
 import { LoginPage } from '../page-object/Login.page'
-import { LOGIN, EMAIL, PASSWORD } from "../../../../credentials"
+import { LOGIN, PASSWORD } from "../../../../credentials"
 import { PublicProfile } from '../page-object/PublicProfile.page'
 import { UserProfile } from '../page-object/UserProfile.page'
 
@@ -16,22 +16,21 @@ describe('Public profile', () => {
 
     beforeEach(async () => {
         await publicProfile.open()
+        await loginPage.login(LOGIN, PASSWORD)
     })
 
-    it('Save valid name in field "Name"', async () => {
-        const NAME: string = 'Vika'
-        await loginPage.login(LOGIN, PASSWORD)
-
-        await publicProfile.saveName(NAME)
-
+    it('User should be change and save name', async () => {
+        const name = 'Vika'
+        await publicProfile.setUserName(name)
+        await publicProfile.savePublicProfileChanges()
+        await publicProfile.viewProfile()
         await userProfile.openUserProfile()
-        expect(await userProfile.getUserNameText()).toEqual(NAME)
+
+        expect(await userProfile.getUserNameText()).toEqual(name)
     })
 
-    it('Email input filed disabled', async () => {
-        await loginPage.login(LOGIN, PASSWORD)
-        publicProfile.getPublicEmail().isFocused()
-        expect(await publicProfile.getPublicEmail().isClickable()).toEqual(false)
+    it('The field Public Email should not be clickable', async () => {
+        expect(await publicProfile.checkingFieldLock()).toEqual(false)
     })
 
     afterEach(async () => {
