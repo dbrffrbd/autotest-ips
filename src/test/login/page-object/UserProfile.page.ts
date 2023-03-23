@@ -8,32 +8,18 @@ class UserProfile {
         this.browser = browser
     }
 
-    public getUserNameText(): Promise<string> {
-        return this.browser.$('//*[contains(@class, "p-name")]').getText()
+    public getUserBioСontents(): Promise<string> {
+        return this.getUserBio().getText()
     }
 
-    public getUserBioText(): Promise<string> {
-        return this.browser.$('//*[contains(@class, "p-note")]').getText()
-    }
-
-    public async chekingUserProfileName(): Promise<void> {
-        await this.getFrameUserProfile().waitForDisplayed({
-            timeoutMsg: 'User profile page did not load'
+    public async getUserNameСontents(): Promise<string> {
+        await this.getUserName().waitForExist({
+            timeoutMsg: 'User name does not exist'
         })
-        await this.getUserNameText()
-    }
-
-    public async chekingUserProfileBio(): Promise<void> {
-        await this.getFrameUserProfile().waitForDisplayed({
-            timeoutMsg: 'User profile page did not load'
-        })
-        await this.getUserBioText()
+        return this.getUserName().getText()
     }
 
     public async openEditProfile(): Promise<void> {
-        await this.getFrameUserProfile().waitForDisplayed({
-            timeoutMsg: 'User profile page did not load'
-        })
         await this.getButtonEditProfile().waitForClickable({
             timeoutMsg: 'Button Edit profile does not clicable'
         })
@@ -48,8 +34,13 @@ class UserProfile {
         return this.getUserPronouns().getText()
     }
 
-    private getFrameUserProfile(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[@id="user-profile-frame"]')
+    //Приватный
+    private getUserBio(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[contains(@class, "p-note")]')
+    }
+
+    private getUserName(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[contains(@class, "p-name")]')
     }
 
     private getButtonEditProfile(): ChainablePromiseElement<WebdriverIO.Element> {

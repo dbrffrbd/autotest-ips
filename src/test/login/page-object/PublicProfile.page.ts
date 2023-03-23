@@ -8,7 +8,7 @@ class PublicProfile {
         this.browser = browser
     }
 
-    public cheackMassagePicture(): Promise<boolean> {
+    public checkMassagePicture(): Promise<boolean> {
         return this.getSetMassage().isDisplayed()
     }
 
@@ -29,7 +29,7 @@ class PublicProfile {
 
     public async selectPronounsShe(): Promise<void> {
         await this.getPronouns().waitForClickable({
-            timeoutMsg: 'Pronouns not clicked'
+            timeoutMsg: 'Pronouns not clickable'
         })
         await this.getPronouns().click()
         await this.getPronounsShe().click()
@@ -41,7 +41,6 @@ class PublicProfile {
     }
 
     public async setUserName(name: string): Promise<void> {
-        await this.getUserName().waitForClickable()
         await this.getUserName().clearValue()
         await this.getUserName().setValue(name)
     }
@@ -58,7 +57,7 @@ class PublicProfile {
 
     public async viewProfile(): Promise<void> {
         await this.getViewProfileButton().waitForClickable({
-            timeoutMsg: 'Link in massage "Profile updated successfully" not clickable'
+            timeoutMsg: 'Link in massage "Profile updated successfully" was not clickable'
         })
         await this.getViewProfileButton().click()
     }
@@ -96,13 +95,12 @@ class PublicProfile {
     }
 
     private getSetPictureButton(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "Button--fullWidth")]')
+        return this.browser.$('//*[@id="avatar-crop-form"]//*[@type="submit"]')
     }
 
     private getSetMassage(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "flash-notice")]')
+        return this.browser.$('//*[@id="js-flash-container"]')
     }
-
 }
 
 async function showHiddenFileInput(browser: WebdriverIO.Browser): Promise<void> {

@@ -24,9 +24,8 @@ describe('Public profile', () => {
         await publicProfile.setUserName(name)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
-        await userProfile.chekingUserProfileName()
 
-        expect(await userProfile.getUserNameText()).toEqual(name)
+        expect(await userProfile.getUserNameСontents()).toEqual(name)
     })
 
     it('User must save an empty name', async () => {
@@ -44,14 +43,13 @@ describe('Public profile', () => {
     })
 
     it('User should be change and save long invalid text in Bio', async () => {
-        const textBio = 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что прак'
         const validTextBio = 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что пра'
+        const textBio: string = `${validTextBio}g`
         await publicProfile.setBio(textBio)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
-        await userProfile.chekingUserProfileBio()
 
-        expect(await userProfile.getUserBioText()).toEqual(validTextBio)
+        expect(await userProfile.getUserBioСontents()).toEqual(validTextBio)
     })
 
     it('User must save pronouns she/her', async () => {
@@ -66,9 +64,9 @@ describe('Public profile', () => {
     it('Photo should be uploaded in profile', async () => {
         const filePath = 'src/files/cat.jpg'
         await publicProfile.uploadFile(filePath)
-        await browser.pause(10000)
+        await browser.pause(2000)
 
-        expect(await publicProfile.cheackMassagePicture()).toEqual(true)
+        expect(await publicProfile.checkMassagePicture()).toEqual(true)
     })
 })
 
