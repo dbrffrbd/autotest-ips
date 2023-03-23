@@ -24,16 +24,54 @@ describe('Public profile', () => {
         await publicProfile.setUserName(name)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
-        await userProfile.openUserProfile()
+        await userProfile.chekingUserProfileName()
 
         expect(await userProfile.getUserNameText()).toEqual(name)
+    })
+
+    it('User must save an empty name', async () => {
+        const name = ''
+        await publicProfile.setUserName(name)
+        await publicProfile.savePublicProfileChanges()
+        await publicProfile.viewProfile()
+        await userProfile.openEditProfile()
+
+        expect(await userProfile.getValueInFieldName()).toEqual(name)
     })
 
     it('The field Public Email should not be clickable', async () => {
         expect(await publicProfile.checkingFieldLock()).toEqual(false)
     })
 
-    afterEach(async () => {
-        await browser.reloadSession()
+    it('User should be change and save long invalid text in Bio', async () => {
+        const textBio = 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что прак'
+        const validTextBio = 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что пра'
+        await publicProfile.setBio(textBio)
+        await publicProfile.savePublicProfileChanges()
+        await publicProfile.viewProfile()
+        await userProfile.chekingUserProfileBio()
+
+        expect(await userProfile.getUserBioText()).toEqual(validTextBio)
     })
+
+    it('User must save pronouns she/her', async () => {
+        const she = 'she/her'
+        await publicProfile.selectPronounsShe()
+        await publicProfile.savePublicProfileChanges()
+        await publicProfile.viewProfile()
+
+        expect(await userProfile.getValueUserPronouns()).toEqual(she)
+    })
+
+    it('Photo should be uploaded in profile', async () => {
+        const filePath = 'src/files/cat.jpg'
+        await publicProfile.uploadFile(filePath)
+        await browser.pause(10000)
+
+        expect(await publicProfile.cheackMassagePicture()).toEqual(true)
+    })
+})
+
+afterEach(async () => {
+    await browser.reloadSession()
 })
