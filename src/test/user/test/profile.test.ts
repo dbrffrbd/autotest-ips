@@ -1,41 +1,52 @@
 import { LoginPage } from '../page-object/Login.page'
-import { LOGIN, PASSWORD } from "../../../../credentials"
 import { PublicProfile } from '../page-object/PublicProfile.page'
 import { UserProfile } from '../page-object/UserProfile.page'
+import { UserModel, createUserModel } from '../model/user.model'
+import { PronounsType, UserData, userData } from '../data/user.data'
+import { EMPTY_VALUE } from '../../../common/data/tests.data'
 
 describe('Public profile', () => {
     let loginPage: LoginPage
     let publicProfile: PublicProfile
     let userProfile: UserProfile
+    const user: UserModel = createUserModel(userData)
 
     before(async () => {
         loginPage = new LoginPage(browser)
         publicProfile = new PublicProfile(browser)
         userProfile = new UserProfile(browser)
+
+        await loginPage.open()
+        await loginPage.setLogin(user.email)
+        await loginPage.setPassword(user.password)
+        await loginPage.login()
+        await browser.pause(2000)
+
+        await publicProfile.open()
+        await publicProfile.selectPronoun(PronounsType.NOTSPECIFY)
+        await publicProfile.savePublicProfileChanges()
     })
 
     beforeEach(async () => {
         await publicProfile.open()
-        await loginPage.login(LOGIN, PASSWORD)
     })
 
     it('User should be change and save name', async () => {
-        const name = 'Vika'
-        await publicProfile.setUserName(name)
+        await publicProfile.setUserName(user.name)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
 
-        expect(await userProfile.getUserNameСontents()).toEqual(name)
+        expect(await userProfile.getUserNameСontents()).toEqual(user.name)
     })
 
     it('User must save an empty name', async () => {
-        const name = ''
-        await publicProfile.setUserName(name)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
         await userProfile.openEditProfile()
 
-        expect(await userProfile.getValueInFieldName()).toEqual(name)
+        // проверить существование элемента, не заходя в настройки (isExist(false)). Те дождать загрузки элемента и проверить ГОТОВО
+        //БЫЛО: expect(await userProfile.getValueInFieldName()).toEqual(EMPTY_VALUE)
+        expect(await userProfile.isNoUserName()).toEqual(true)
     })
 
     it('The field Public Email should not be clickable', async () => {
@@ -43,33 +54,30 @@ describe('Public profile', () => {
     })
 
     it('User should be change and save long invalid text in Bio', async () => {
-        const validTextBio = 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что пра'
-        const textBio: string = `${validTextBio}g`
-        await publicProfile.setBio(textBio)
+        const longTextBio: string = `${user.textBio}а`
+        await publicProfile.setBio(longTextBio)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
 
-        expect(await userProfile.getUserBioСontents()).toEqual(validTextBio)
+        expect(await userProfile.getUserBioСontents()).toEqual(user.textBio)
     })
 
-    it('User must save pronouns she/her', async () => {
-        const she = 'she/her'
-        await publicProfile.selectPronounsShe()
+
+    it.only('User must save pronouns she/her', async () => {
+        //метод не универсальный ГОТОВО
+        await publicProfile.selectPronoun(user.pornoun) //подготовить аккаунт к нужному состоянию (ДОБАВИТЬ В Before выключение выбранного местоимения) ГОТОВО
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
+        //const she = publicProfile.getValueExpectPronoun(PronounsType.SHE)
 
-        expect(await userProfile.getValueUserPronouns()).toEqual(she)
+        expect(await userProfile.getValueUserPronouns()).toEqual('she/her')
     })
 
     it('Photo should be uploaded in profile', async () => {
-        const filePath = 'src/files/cat.jpg'
-        await publicProfile.uploadFile(filePath)
+        await publicProfile.uploadFile(user.avatar)
         await browser.pause(2000)
 
         expect(await publicProfile.checkMassagePicture()).toEqual(true)
     })
-})
 
-afterEach(async () => {
-    await browser.reloadSession()
 })

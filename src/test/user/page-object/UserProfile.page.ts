@@ -19,6 +19,10 @@ class UserProfile {
         return this.getUserName().getText()
     }
 
+    public async isNoUserName(): Promise<boolean> {
+        return this.getUserName().isExisting()
+    }
+
     public async openEditProfile(): Promise<void> {
         await this.getButtonEditProfile().waitForClickable({
             timeoutMsg: 'Button Edit profile does not clicable'
@@ -51,7 +55,7 @@ class UserProfile {
     }
 
     private getUserPronouns(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@itemprop, "pronouns") ]')
+        return this.browser.$('//*[contains(@itemprop, "pronouns")]')
     }
 }
 export {

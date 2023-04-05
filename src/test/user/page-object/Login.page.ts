@@ -1,4 +1,5 @@
 import { ChainablePromiseElement } from 'webdriverio'
+import { UserModel } from '../model/user.model'
 
 class LoginPage {
     private browser: WebdriverIO.Browser
@@ -8,27 +9,50 @@ class LoginPage {
         this.browser = browser
     }
 
-    public async invalidLogin(userEmai: string, userPassword: string): Promise<void> {
+    // нужно убрать метод
+    // public async invalidLogin(userEmail: string, password: string): Promise<void> {
+    //     await this.getLoginField().waitForDisplayed({
+    //         timeoutMsg: 'Login field was not displayed'
+    //     })
+    //     await this.getLoginField().setValue(userEmail)
+    //     await this.getPasswordField().setValue(password)
+    //     await this.getLoginButton().waitForClickable({
+    //         timeoutMsg: 'Login button was not clickable'
+    //     })
+    //     await this.getLoginButton().click()
+    //     await this.getErrorMassage().waitForDisplayed({
+    //         timeoutMsg: 'Message about invalid email or login was not displayed'
+    //     })
+    // }
+
+    // разделить на несколько методов (только для использования в login.test, для остальных тестов будет исользоваться)
+    // public async login(user: UserModel): Promise<void> {
+    //     await this.getLoginField().waitForDisplayed({
+    //         timeoutMsg: 'Login field was not displayed'
+    //     })
+    //     await this.getLoginField().setValue(user.email)
+    //     await this.getPasswordField().setValue(user.password)
+    //     await this.getLoginButton().waitForClickable({
+    //         timeoutMsg: 'Login button was not clickable'
+    //     })
+    //     await this.getLoginButton().click()
+    // }
+
+    public async setLogin(login: string): Promise<void> {
         await this.getLoginField().waitForDisplayed({
             timeoutMsg: 'Login field was not displayed'
         })
-        await this.getLoginField().setValue(userEmai)
-        await this.getPasswordField().setValue(userPassword)
-        await this.getLoginButton().waitForClickable({
-            timeoutMsg: 'Login button was not clickable'
-        })
-        await this.getLoginButton().click()
-        await this.getErrorMassage().waitForDisplayed({
-            timeoutMsg: 'Message about invalid email or login was not displayed'
-        })
+        await this.getLoginField().setValue(login)
     }
 
-    public async login(userEmai: string, userPassword: string): Promise<void> {
-        await this.getLoginField().waitForDisplayed({
-            timeoutMsg: 'Login field was not displayed'
+    public async setPassword(password: string): Promise<void> {
+        await this.getPasswordField().waitForDisplayed({
+            timeoutMsg: 'Password field was not displayed'
         })
-        await this.getLoginField().setValue(userEmai)
-        await this.getPasswordField().setValue(userPassword)
+        await this.getPasswordField().setValue(password)
+    }
+
+    public async login(): Promise<void> {
         await this.getLoginButton().waitForClickable({
             timeoutMsg: 'Login button was not clickable'
         })

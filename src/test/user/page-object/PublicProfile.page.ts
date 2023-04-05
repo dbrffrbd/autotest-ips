@@ -1,4 +1,5 @@
 import { ChainablePromiseElement } from 'webdriverio'
+import { PronounsType } from '../data/user.data'
 
 class PublicProfile {
     protected browser: WebdriverIO.Browser
@@ -11,7 +12,7 @@ class PublicProfile {
     public checkMassagePicture(): Promise<boolean> {
         return this.getSetMassage().isDisplayed()
     }
-
+    //isFieldLock
     public checkingFieldLock(): Promise<boolean> {
         return this.getPublicEmail().isClickable()
     }
@@ -27,12 +28,16 @@ class PublicProfile {
         await this.getUpdateProfileButton().click()
     }
 
-    public async selectPronounsShe(): Promise<void> {
+    public async selectPronoun(pronoun: PronounsType): Promise<void> {
         await this.getPronouns().waitForClickable({
             timeoutMsg: 'Pronouns not clickable'
         })
         await this.getPronouns().click()
-        await this.getPronounsShe().click()
+        await this.getPronoun(pronoun).click()
+    }
+
+    public getValueExpectPronoun(pronoun: PronounsType): Promise<string> {
+        return this.getPronoun(pronoun).getValue()
     }
 
     public async setBio(textBio: string): Promise<void> {
@@ -70,8 +75,8 @@ class PublicProfile {
         return this.browser.$('//*[@id="user_profile_pronouns_select"]')
     }
 
-    private getPronounsShe(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[@id="user_profile_pronouns_select"]/option[3]')
+    private getPronoun(pronoun: PronounsType): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$(`//*[@id="user_profile_pronouns_select"]/option[${pronoun}]`)
     }
 
     private getPublicEmail(): ChainablePromiseElement<WebdriverIO.Element> {
