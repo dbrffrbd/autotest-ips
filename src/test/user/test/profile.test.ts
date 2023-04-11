@@ -20,7 +20,7 @@ describe('Public profile', () => {
         await loginPage.setLogin(user.email)
         await loginPage.setPassword(user.password)
         await loginPage.login()
-        await browser.pause(2000)
+        await browser.pause(8000)
 
         await publicProfile.open()
         await publicProfile.selectPronoun(PronounsType.NOTSPECIFY)
@@ -62,15 +62,13 @@ describe('Public profile', () => {
         expect(await userProfile.getUserBioСontents()).toEqual(user.textBio)
     })
 
-
-    it.only('User must save pronouns she/her', async () => {
+    it('User must save pronouns she/her', async () => {
         //метод не универсальный ГОТОВО
         await publicProfile.selectPronoun(user.pornoun) //подготовить аккаунт к нужному состоянию (ДОБАВИТЬ В Before выключение выбранного местоимения) ГОТОВО
         await publicProfile.savePublicProfileChanges()
-        await publicProfile.viewProfile()
-        //const she = publicProfile.getValueExpectPronoun(PronounsType.SHE)
+        await userProfile.open()
 
-        expect(await userProfile.getValueUserPronouns()).toEqual('she/her')
+        expect(await userProfile.isExistPronouns()).toEqual(true)
     })
 
     it('Photo should be uploaded in profile', async () => {

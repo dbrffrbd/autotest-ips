@@ -3,7 +3,7 @@ import { IssuesPage } from '../page-object/Issues.page'
 import { UserModel, createUserModel } from '../../user/model/user.model'
 import { IssueModel, createIssueModel } from '../../issues/model/issues.model'
 import { UserData, userData } from '../../user/data/user.data'
-import { IssueData, issueData } from '../../issues/data/issues.data'
+import { ResonForLocking, IssueData, issueData, IssueStatus } from '../../issues/data/issues.data'
 import { MainPage } from '../../user/page-object/Main.page'
 
 describe('Issues page', () => {
@@ -51,7 +51,7 @@ describe('Issues page', () => {
         expect(await issuesPage.getTextTitleIssue()).toEqual(issue.newNameIssue)
     })
 
-    it.only('Photo should be uploaded in issue', async () => {
+    it('Photo should be uploaded in issue', async () => {
         await issuesPage.createIssue()
         await issuesPage.setTitleValue(issue.issueTitle)
 
@@ -59,6 +59,91 @@ describe('Issues page', () => {
         await issuesPage.subbmitIssue()
 
         expect(await issuesPage.isImageLoading()).toEqual(true)
+    })
+
+    it('The comment should be added to the task', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+
+        await issuesPage.selectCommentField()
+        await issuesPage.setCommentIssue(issue.comment)
+        await issuesPage.subbmitIssue()
+
+        expect(await issuesPage.getTextCommentIssue()).toEqual(issue.comment)
+    })
+
+    it('The comment should be blocked', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+        await issuesPage.subbmitIssue()
+
+        await browser.pause(5000)
+
+        await issuesPage.selectLockConversation()
+        await issuesPage.selectMainButtonReasonForLocking()
+        await issuesPage.selectReasonForLocking(ResonForLocking.SPAM)
+        await issuesPage.saveLockConversation()
+
+        expect(await issuesPage.isExistSpamTextUnderComment()).toEqual(true)
+
+    })
+
+    it('The issue with tag "Bug" should be found', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+
+        await issuesPage.openLabelsSettingsPopup()
+        await issuesPage.selectLabelsSettingsBug()
+        await issuesPage.openLabelsSettingsPopup()
+        await issuesPage.subbmitIssue()
+
+        await browser.pause(5000)
+
+        await issuesPage.openPage()
+        await issuesPage.selectLabelsButton()
+        await issuesPage.selectBugButton()
+        await browser.pause(5000)
+        await issuesPage.foundIssue(issue.issueTitle)
+
+        expect(await issuesPage.isExistFoundIssue(issue.issueTitle)).toEqual(true)
+    })
+
+    it('The issue should be closed', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+        await issuesPage.subbmitIssue()
+
+        await issuesPage.openPage()
+        await issuesPage.foundIssue(issue.issueTitle)
+        await issuesPage.selectCheckboxIssue(issue.issueTitle)
+        await issuesPage.selectMarkAsButton()
+        await issuesPage.selectActionInMarkAsButton(IssueStatus.CLOSED)
+
+        expect(await issuesPage.isExistClosedIssue()).toEqual(true)
+    })
+
+    it('The issue should be deleted', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+        await issuesPage.subbmitIssue()
+
+        await issuesPage.selectDeleteIssueButton()
+        await issuesPage.selectDeleteIssueButtonInPopup()
+
+        expect(await issuesPage.isExistMessageDeleteIssue()).toEqual(true)
+    })
+
+    it.only('The issue should be assigned to the user', async () => {
+        await issuesPage.createIssue()
+        await issuesPage.setTitleValue(issue.issueTitle)
+        await issuesPage.subbmitIssue()
+
+        await issuesPage.selectAssigneesButton()
+        await issuesPage.userSearch(user.login)
+        await issuesPage.selectAssigneesButton()
+
+        expect(await issuesPage.isUserAssignees()).toEqual(true)
+
     })
 
 })

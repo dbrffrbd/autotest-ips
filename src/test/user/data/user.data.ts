@@ -1,4 +1,5 @@
 import { LOGIN, EMAIL, PASSWORD } from "../../../../credentials"
+import { getRandomString, getRandomInteger, getTime } from "../../../common/data/tests.data"
 
 enum PronounsType {
     NOTSPECIFY = 1,
@@ -22,8 +23,8 @@ const userData: UserData = {
     login: LOGIN,
     password: PASSWORD,
     email: EMAIL,
-    name: 'Vika',
-    textBio: 'Играет значение административных деятельности позволяет роль высшего значение и требуют в важную интересный постоянный представляет способствует сфера а что пра',
+    name: `Вика-${getRandomString(getRandomInteger(1, 243))}-${getTime()}`,
+    textBio: `Bio-${getRandomString(getRandomInteger(143, 143))}-${getTime()}`,
     pornoun: PronounsType.SHE,
     avatar: 'src/files/cat.jpg',
 }
@@ -36,3 +37,4 @@ export {
     PronounsType,
     INVALID_EMAIL,
 }
+

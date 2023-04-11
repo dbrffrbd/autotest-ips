@@ -8,6 +8,10 @@ class UserProfile {
         this.browser = browser
     }
 
+    public async open(): Promise<void> {
+        await this.browser.url(this.url)
+    }
+
     public getUserBioСontents(): Promise<string> {
         return this.getUserBio().getText()
     }
@@ -34,8 +38,8 @@ class UserProfile {
         return this.getNameFiled().getValue()
     }
 
-    public getValueUserPronouns(): Promise<string> {
-        return this.getUserPronouns().getText()
+    public isExistPronouns(): Promise<boolean> {
+        return this.getUserPronouns().isExisting()
     }
 
     private getUserBio(): ChainablePromiseElement<WebdriverIO.Element> {

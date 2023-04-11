@@ -4,6 +4,8 @@ type IssueModel = {
     issueTitle: string,
     newNameIssue: string,
     image: string,
+    state: string,
+    comment: string,
 }
 
 function createIssueModel(data: IssueData): IssueModel {
@@ -11,6 +13,8 @@ function createIssueModel(data: IssueData): IssueModel {
         issueTitle: data.issueTitle,
         newNameIssue: data.newNameIssue,
         image: data.image,
+        state: data.state,
+        comment: data.comment
     }
 }
 

@@ -1,3 +1,4 @@
 /node_modules
 /misc
 credentials.ts
+/allure-results
