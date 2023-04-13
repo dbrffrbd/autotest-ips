@@ -37,6 +37,12 @@ class LoginPage {
         await this.getLoginButton().click()
     }
 
+    public async loginInAccount(user: UserModel): Promise<void> {
+        await this.setLogin(user.login)
+        await this.setPassword(user.password)
+        await this.login()
+    }
+
     public massageDisplayed(): Promise<boolean> {
         Reporter.addStep('Проверить отображение сообщения об ошибке логинации')
         return this.getErrorMassage().isDisplayed()

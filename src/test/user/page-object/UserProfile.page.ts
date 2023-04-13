@@ -23,6 +23,7 @@ class UserProfile {
         return this.getUserName().getText()
     }
 
+    // либо удалить либо перепиать без инверироания результата
     public async isNoUserName(): Promise<boolean> {
         return this.getUserName().isExisting()
     }
@@ -38,6 +39,7 @@ class UserProfile {
         return this.getNameFiled().getValue()
     }
 
+    //отсортировать методы
     public isExistPronouns(): Promise<boolean> {
         return this.getUserPronouns().isExisting()
     }

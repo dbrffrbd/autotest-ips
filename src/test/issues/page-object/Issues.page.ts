@@ -14,13 +14,19 @@ class IssuesPage {
         await this.browser.url(this.url)
     }
 
+    public async openIssue(issueName: string): Promise<void> {
+        await this.browser.pause(1000)
+        await this.getFoundIssue(issueName).waitForClickable({
+            timeoutMsg: 'The issue did not clicable',
+        })
+        await this.getFoundIssue(issueName).click()
+    }
+
     public async changeNameIssue(newNameIssue: string): Promise<void> {
         await this.getEditField().waitForDisplayed({
             timeoutMsg: 'Field for edit issue does not clickable'
         })
         await this.getEditField().setValue(newNameIssue)
-        //сделай клик отдельно ГОТОВО
-        // await this.saveIssue()
     }
 
     public async setCommentIssue(issueComment: string): Promise<void> {
@@ -30,7 +36,7 @@ class IssuesPage {
         await this.getCommentField().setValue(issueComment)
     }
 
-    public async saveIssue(): Promise<void> {
+    public async saveChangesIssue(): Promise<void> {
         await this.getButtonSaveEditIssue().waitForClickable({
             timeoutMsg: 'Save button does not clickable'
         })
@@ -64,6 +70,7 @@ class IssuesPage {
             timeoutMsg: 'Button does not clickable'
         })
         await this.getNewIssueButton().click()
+        await browser.pause(1000)
     }
 
     public async getTextTitleIssue(): Promise<string> {
@@ -131,8 +138,8 @@ class IssuesPage {
     }
 
     public async selectLockConversation(): Promise<void> {
-        await this.getLockAndUnlockConversation().waitForClickable({
-            timeoutMsg: 'The button Lock/Unlock Conversation did not clicable',
+        await this.getLockAndUnlockConversation().waitForDisplayed({
+            timeoutMsg: 'The button Lock/Unlock Conversation did not displayed',
         })
         await this.getLockAndUnlockConversation().click()
     }
@@ -166,11 +173,6 @@ class IssuesPage {
         return this.getIssueId().getValue()
     }
 
-    // public bugIssueValue(idIssue: number): Promise<string> {
-    //     return this.getBugIssue(idIssue).getValue()
-    // }
-
-    //переименовать LabelsSettings openLabelsSettingsPopup
     public async openLabelsSettingsPopup(): Promise<void> {
         await this.getLabelsSettings().waitForClickable({
             timeoutMsg: 'The button Labels settings did not clicable',
@@ -186,17 +188,17 @@ class IssuesPage {
     }
 
     public async foundIssue(nameIssue: string): Promise<void> {
-        await this.getIssuesSearch().waitForClickable({
-            timeoutMsg: 'The issues search did not clicable',
+        await this.getIssuesSearch().waitForDisplayed({
+            timeoutMsg: 'The issues search did not displayed',
         })
         await this.getIssuesSearch().click()
         await this.getIssuesSearch().clearValue()
         await this.getIssuesSearch().setValue(nameIssue)
         await this.browser.keys('Enter')
-        await browser.pause(3000)
+        await browser.pause(2000)
     }
 
-    public async userSearch(loginUser: string): Promise<void> {
+    public async userSearch(loginUser: string): Promise<void> {//переименовать метод в searchUser()
         await this.getUserSearchField().waitForClickable({
             timeoutMsg: 'The user search did not clicable',
         })
@@ -206,7 +208,6 @@ class IssuesPage {
         await this.browser.keys('Enter')
         await browser.pause(3000)
     }
-
 
     public async isExistFoundIssue(issueName: string): Promise<boolean> {
         await this.getFoundIssue(issueName).waitForExist({
@@ -240,6 +241,10 @@ class IssuesPage {
         await this.getUserNameAssignees().waitForDisplayed({
             timeoutMsg: 'The user name in assignees did not displayed',
         })
+        return (await this.getUserNameAssignees()).isExisting()
+    }
+
+    public async isNoAssignees(): Promise<boolean> {
         return (await this.getUserNameAssignees()).isExisting()
     }
 
@@ -286,8 +291,16 @@ class IssuesPage {
         await this.browser.pause(5000)
     }
 
+    public async clearAssignees(): Promise<void> {
+        await this.getClearAssignees().waitForClickable({
+            timeoutMsg: 'The button "Clear assignees" did not clicable',
+        })
+        await this.getClearAssignees().click()
+        await this.browser.pause(5000)
+    }
+
     private getFoundIssue(issueName: string): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$(`//*[text() = "${issueName}"]/ancestor::*[contains(@id, "issue_")]`)
+        return this.browser.$(`//*[text() = "${issueName}"]`)
     }
 
     private getSaveCommentButton(): ChainablePromiseElement<WebdriverIO.Element> {
@@ -421,6 +434,10 @@ class IssuesPage {
 
     private getUserNameAssignees(): ChainablePromiseElement<WebdriverIO.Element> {
         return this.browser.$('//*[@id="partial-discussion-sidebar"]//a[contains(@class, "css-truncate-target")]')
+    }
+
+    private getClearAssignees(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[@id="assignees-select-menu"]//*[contains(@class, "btn-block")]')
     }
 
 }

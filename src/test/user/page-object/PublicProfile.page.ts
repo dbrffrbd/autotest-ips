@@ -33,9 +33,12 @@ class PublicProfile {
             timeoutMsg: 'Pronouns not clickable'
         })
         await this.getPronouns().click()
+
+        //проверить на кликабельность
         await this.getPronoun(pronoun).click()
     }
 
+    // надо отсортировать мньоды по алфавиту
     public getValueExpectPronoun(pronoun: PronounsType): Promise<string> {
         return this.getPronoun(pronoun).getValue()
     }
@@ -57,6 +60,7 @@ class PublicProfile {
         await showHiddenFileInput(this.browser)
         const file: string = await this.browser.uploadFile(filePath)
         await this.getInputFile().setValue(file)
+        // дождаться кликабельности
         await this.getSetPictureButton().click()
     }
 

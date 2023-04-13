@@ -2,33 +2,33 @@ import { LoginPage } from '../../user/page-object/Login.page'
 import { IssuesPage } from '../page-object/Issues.page'
 import { UserModel, createUserModel } from '../../user/model/user.model'
 import { IssueModel, createIssueModel } from '../../issues/model/issues.model'
-import { UserData, userData } from '../../user/data/user.data'
-import { ResonForLocking, IssueData, issueData, IssueStatus } from '../../issues/data/issues.data'
+import { userData } from '../../user/data/user.data'
+import { ResonForLocking, IssueStatus, createIssueData } from '../../issues/data/issues.data'
 import { MainPage } from '../../user/page-object/Main.page'
+import { LOGIN, REPO } from '../../../../credentials'
+import { IssueAPIService } from '../../../common/api/api-service/issueAPIService'
 
 describe('Issues page', () => {
     let loginPage: LoginPage
     let issuesPage: IssuesPage
     const user: UserModel = createUserModel(userData)
     let mainPage: MainPage
-    const issue: IssueModel = createIssueModel(issueData)
+    let issue: IssueModel
 
     before(async () => {
         issuesPage = new IssuesPage(browser)
         loginPage = new LoginPage(browser)
         mainPage = new MainPage(browser)
+        await loginPage.open()
+        await loginPage.loginInAccount(user)
+        await mainPage.openUserMenu()
     })
 
     beforeEach(async () => {
-        await loginPage.open()
-        await loginPage.setLogin(user.email)
-        await loginPage.setPassword(user.password)
-        await loginPage.login()
-        await mainPage.openUserMenu()
         await issuesPage.openPage()
+        issue = createIssueModel(createIssueData())
     })
 
-    // желательно переименовать, например в пассивеном залоге ГОТОВО
     it('Issue should be created', async () => {
         await issuesPage.createIssue()
         await issuesPage.setTitleValue(issue.issueTitle)
@@ -37,25 +37,10 @@ describe('Issues page', () => {
         expect(await issuesPage.getTextTitleIssue()).toEqual(issue.issueTitle)
     })
 
-    it('User should edit the issue', async () => {
-        //убрать клики из названия ГОТОВО
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-        await issuesPage.subbmitIssue()
-
-        await issuesPage.editIssue()
-        await issuesPage.changeNameIssue(issue.newNameIssue)
-        //вынести нажатие кнопки ГОТОВО
-        await issuesPage.saveIssue()
-
-        expect(await issuesPage.getTextTitleIssue()).toEqual(issue.newNameIssue)
-    })
-
     it('Photo should be uploaded in issue', async () => {
         await issuesPage.createIssue()
         await issuesPage.setTitleValue(issue.issueTitle)
-
-        await issuesPage.uploadFile(issue.image)
+        await issuesPage.uploadFile(issue.filePath)
         await issuesPage.subbmitIssue()
 
         expect(await issuesPage.isImageLoading()).toEqual(true)
@@ -64,7 +49,6 @@ describe('Issues page', () => {
     it('The comment should be added to the task', async () => {
         await issuesPage.createIssue()
         await issuesPage.setTitleValue(issue.issueTitle)
-
         await issuesPage.selectCommentField()
         await issuesPage.setCommentIssue(issue.comment)
         await issuesPage.subbmitIssue()
@@ -72,78 +56,81 @@ describe('Issues page', () => {
         expect(await issuesPage.getTextCommentIssue()).toEqual(issue.comment)
     })
 
-    it('The comment should be blocked', async () => {
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-        await issuesPage.subbmitIssue()
+    describe('Issues edit', () => {
+        beforeEach(async () => {
+            await IssueAPIService.createIssue(issue, LOGIN, REPO)
+            await issuesPage.openPage()
+            await issuesPage.foundIssue(issue.issueTitle)
+            await issuesPage.openIssue(issue.issueTitle)
+        })
 
-        await browser.pause(5000)
+        it('User should edit the issue', async () => {
+            await issuesPage.editIssue()
+            await issuesPage.changeNameIssue(issue.newNameIssue)
+            await issuesPage.saveChangesIssue()
 
-        await issuesPage.selectLockConversation()
-        await issuesPage.selectMainButtonReasonForLocking()
-        await issuesPage.selectReasonForLocking(ResonForLocking.SPAM)
-        await issuesPage.saveLockConversation()
+            expect(await issuesPage.getTextTitleIssue()).toEqual(issue.newNameIssue)
+        })
 
-        expect(await issuesPage.isExistSpamTextUnderComment()).toEqual(true)
+        it('The comment should be blocked', async () => {
+            await issuesPage.selectLockConversation()
+            await issuesPage.selectMainButtonReasonForLocking()
+            await issuesPage.selectReasonForLocking(ResonForLocking.SPAM)
+            await issuesPage.saveLockConversation()
 
+            expect(await issuesPage.isExistSpamTextUnderComment()).toEqual(true)
+        })
+
+        it('The issue should be closed', async () => {
+            await issuesPage.openPage()
+            await browser.pause(2000)
+            await issuesPage.foundIssue(issue.issueTitle)
+            await issuesPage.selectCheckboxIssue(issue.issueTitle)
+            await issuesPage.selectMarkAsButton()
+            await issuesPage.selectActionInMarkAsButton(IssueStatus.CLOSED)
+
+            expect(await issuesPage.isExistClosedIssue()).toEqual(true)
+        })
+
+        it('The issue should be deleted', async () => {
+            await issuesPage.selectDeleteIssueButton()
+            await issuesPage.selectDeleteIssueButtonInPopup()
+
+            expect(await issuesPage.isExistMessageDeleteIssue()).toEqual(true)
+        })
+
+        it('The issue with tag "Bug" should be found', async () => {
+            await issuesPage.openLabelsSettingsPopup()
+            await issuesPage.selectLabelsSettingsBug()
+            await issuesPage.openLabelsSettingsPopup()
+
+            await issuesPage.openPage()
+            await issuesPage.selectLabelsButton()
+            await issuesPage.selectBugButton()
+            await issuesPage.foundIssue(issue.issueTitle)
+
+            expect(await issuesPage.isExistFoundIssue(issue.issueTitle)).toEqual(true)
+        })
+
+        it('The issue should be assigned to the user', async () => {
+            await browser.pause(2000)
+            await issuesPage.selectAssigneesButton()
+            await issuesPage.userSearch(user.login)
+            await issuesPage.selectAssigneesButton()
+            expect(await issuesPage.isUserAssignees()).toEqual(true)
+
+        })
+
+        it('Delete an assignment from a task', async () => {
+            await browser.pause(2000)
+            await issuesPage.selectAssigneesButton()
+            await issuesPage.userSearch(user.login)
+            await issuesPage.selectAssigneesButton()
+
+            await issuesPage.selectAssigneesButton()
+            await issuesPage.clearAssignees()
+
+            expect(await issuesPage.isNoAssignees()).toEqual(false)
+        })
     })
-
-    it('The issue with tag "Bug" should be found', async () => {
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-
-        await issuesPage.openLabelsSettingsPopup()
-        await issuesPage.selectLabelsSettingsBug()
-        await issuesPage.openLabelsSettingsPopup()
-        await issuesPage.subbmitIssue()
-
-        await browser.pause(5000)
-
-        await issuesPage.openPage()
-        await issuesPage.selectLabelsButton()
-        await issuesPage.selectBugButton()
-        await browser.pause(5000)
-        await issuesPage.foundIssue(issue.issueTitle)
-
-        expect(await issuesPage.isExistFoundIssue(issue.issueTitle)).toEqual(true)
-    })
-
-    it('The issue should be closed', async () => {
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-        await issuesPage.subbmitIssue()
-
-        await issuesPage.openPage()
-        await issuesPage.foundIssue(issue.issueTitle)
-        await issuesPage.selectCheckboxIssue(issue.issueTitle)
-        await issuesPage.selectMarkAsButton()
-        await issuesPage.selectActionInMarkAsButton(IssueStatus.CLOSED)
-
-        expect(await issuesPage.isExistClosedIssue()).toEqual(true)
-    })
-
-    it('The issue should be deleted', async () => {
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-        await issuesPage.subbmitIssue()
-
-        await issuesPage.selectDeleteIssueButton()
-        await issuesPage.selectDeleteIssueButtonInPopup()
-
-        expect(await issuesPage.isExistMessageDeleteIssue()).toEqual(true)
-    })
-
-    it.only('The issue should be assigned to the user', async () => {
-        await issuesPage.createIssue()
-        await issuesPage.setTitleValue(issue.issueTitle)
-        await issuesPage.subbmitIssue()
-
-        await issuesPage.selectAssigneesButton()
-        await issuesPage.userSearch(user.login)
-        await issuesPage.selectAssigneesButton()
-
-        expect(await issuesPage.isUserAssignees()).toEqual(true)
-
-    })
-
 })

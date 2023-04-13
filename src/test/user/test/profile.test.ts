@@ -4,12 +4,16 @@ import { UserProfile } from '../page-object/UserProfile.page'
 import { UserModel, createUserModel } from '../model/user.model'
 import { PronounsType, UserData, userData } from '../data/user.data'
 import { EMPTY_VALUE } from '../../../common/data/tests.data'
+import { UserAPIService, UserResponse } from '../../../common/api/api-service/UserAPIService'
+import { AxiosResponse } from 'axios'
+import { emptyData } from "../../user/data/user.data"
 
 describe('Public profile', () => {
     let loginPage: LoginPage
     let publicProfile: PublicProfile
     let userProfile: UserProfile
     const user: UserModel = createUserModel(userData)
+    const emptyUser: UserModel = createUserModel(emptyData)
 
     before(async () => {
         loginPage = new LoginPage(browser)
@@ -17,9 +21,8 @@ describe('Public profile', () => {
         userProfile = new UserProfile(browser)
 
         await loginPage.open()
-        await loginPage.setLogin(user.email)
-        await loginPage.setPassword(user.password)
-        await loginPage.login()
+        await loginPage.loginInAccount(user)
+        // зачем пауза?
         await browser.pause(8000)
 
         await publicProfile.open()
@@ -29,9 +32,10 @@ describe('Public profile', () => {
 
     beforeEach(async () => {
         await publicProfile.open()
+        await UserAPIService.updateAuthenticatedUser(emptyUser)
     })
 
-    it('User should be change and save name', async () => {
+    it('User should change and save name', async () => {
         await publicProfile.setUserName(user.name)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
@@ -39,13 +43,13 @@ describe('Public profile', () => {
         expect(await userProfile.getUserNameСontents()).toEqual(user.name)
     })
 
-    it('User must save an empty name', async () => {
+    it('User should save an empty name', async () => {
+        await publicProfile.setUserName(EMPTY_VALUE)
         await publicProfile.savePublicProfileChanges()
         await publicProfile.viewProfile()
         await userProfile.openEditProfile()
 
-        // проверить существование элемента, не заходя в настройки (isExist(false)). Те дождать загрузки элемента и проверить ГОТОВО
-        //БЫЛО: expect(await userProfile.getValueInFieldName()).toEqual(EMPTY_VALUE)
+        //Вернуть expect(await userProfile.getUserNameСontents()).toEqual(EMPTY_VALUE)
         expect(await userProfile.isNoUserName()).toEqual(true)
     })
 
@@ -53,15 +57,20 @@ describe('Public profile', () => {
         expect(await publicProfile.checkingFieldLock()).toEqual(false)
     })
 
+
+    //переименовать на ожидаемый результат
+    //long bio text should be cut and save
     it('User should be change and save long invalid text in Bio', async () => {
         const longTextBio: string = `${user.textBio}а`
         await publicProfile.setBio(longTextBio)
         await publicProfile.savePublicProfileChanges()
-        await publicProfile.viewProfile()
+        //await publicProfile.viewProfile()
 
+        await userProfile.open()
         expect(await userProfile.getUserBioСontents()).toEqual(user.textBio)
     })
 
+    // User pronoun should be equal value she/her
     it('User must save pronouns she/her', async () => {
         //метод не универсальный ГОТОВО
         await publicProfile.selectPronoun(user.pornoun) //подготовить аккаунт к нужному состоянию (ДОБАВИТЬ В Before выключение выбранного местоимения) ГОТОВО
@@ -76,6 +85,10 @@ describe('Public profile', () => {
         await browser.pause(2000)
 
         expect(await publicProfile.checkMassagePicture()).toEqual(true)
+    })
+
+    afterEach(async () => {
+        await UserAPIService.updateAuthenticatedUser(emptyUser)
     })
 
 })

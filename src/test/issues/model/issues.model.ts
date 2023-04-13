@@ -3,18 +3,20 @@ import { IssueData } from '../data/issues.data'
 type IssueModel = {
     issueTitle: string,
     newNameIssue: string,
-    image: string,
+    filePath: string,
     state: string,
     comment: string,
+    assignees: string[],
 }
 
 function createIssueModel(data: IssueData): IssueModel {
     return {
         issueTitle: data.issueTitle,
         newNameIssue: data.newNameIssue,
-        image: data.image,
+        filePath: data.filePath,
         state: data.state,
-        comment: data.comment
+        comment: data.comment,
+        assignees: data.assignees,
     }
 }
 

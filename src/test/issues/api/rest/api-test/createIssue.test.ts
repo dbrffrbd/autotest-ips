@@ -1,10 +1,10 @@
 import { IssueModel, createIssueModel } from "../../../model/issues.model"
-import { CreateIssueResponse } from "../../../../../common/api/api-service/issueAPIService"
+import { CreateIssueResponse } from "../../../../../common/api/api-service/IssueAPIService"
 import { createIssueData } from "../../../data/issues.data"
 import { LOGIN, REPO } from "../../../../../../credentials"
 import fetch, { Response } from 'node-fetch'
 import { AxiosResponse } from "axios"
-import { IssueAPIProvider } from "../../../../../common/api/api-provider/issueAPIProvider"
+import { IssueAPIProvider } from "../../../../../common/api/api-provider/IssueAPIProvider"
 
 describe('POST repos/{owner}/{repo}/issues', () => {
     let issue: IssueModel

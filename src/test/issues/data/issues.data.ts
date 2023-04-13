@@ -1,4 +1,5 @@
 import { getRandomString, getRandomInteger, getTime } from "../../../common/data/tests.data"
+import { userData } from "../../user/data/user.data"
 
 enum ResonForLocking {
     NOT = 1,
@@ -16,32 +17,29 @@ enum IssueStatus {
 type IssueData = {
     issueTitle: string,
     newNameIssue: string,
-    image: string,
+    filePath: string,
     state: string,
     comment: string,
-}
-
-const issueData: IssueData = {
-    issueTitle: `Имя задачи-${getRandomString(getRandomInteger(1, 234))}-${getTime()}`,
-    newNameIssue: `Новое имя задачи-${getRandomString(getRandomInteger(1, 228))}-${getTime()}`,
-    image: 'src/files/cat.jpg',
-    state: 'open',
-    comment: `Комментарий задачи-${getRandomString(getRandomInteger(1, 2000))}-${getTime()}`,
+    assignees: string[],
+    owner: string,
+    repo: string,
 }
 
 function createIssueData(): IssueData {
     return {
         issueTitle: `Имя задачи-${getRandomString(getRandomInteger(1, 234))}-${getTime()}`,
         newNameIssue: `Новое имя задачи-${getRandomString(getRandomInteger(1, 228))}-${getTime()}`,
-        image: 'src/files/cat.jpg',
+        filePath: 'src/common/data/files/cat.jpg',
         state: 'open',
         comment: `Комментарий задачи-${getRandomString(getRandomInteger(1, 2000))}-${getTime()}`,
+        assignees: [userData.login],
+        owner: 'dbrffrbd',
+        repo: 'autotest-ip',
     }
 }
 
 export {
     IssueData,
-    issueData,
     createIssueData,
     ResonForLocking,
     IssueStatus,

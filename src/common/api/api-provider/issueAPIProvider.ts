@@ -1,9 +1,9 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { GitAPIProvider } from './GitAPIProvider'
-import { CreateIssueRequest } from '../api-data.provider/issueAPIDataProvider';
+import { CreateIssueRequest } from '../api-data.provider/IssueAPIDataProvider';
 
 class IssueAPIProvider extends GitAPIProvider {
-    public create<T>(owner: string, repo: string, data: CreateIssueRequest): Promise<AxiosResponse<T>> {
+    public createIssue<T>(owner: string, repo: string, data: CreateIssueRequest): Promise<AxiosResponse<T>> {
         const config: AxiosRequestConfig = IssueAPIProvider.configureRequest(
             `/repos/${owner}/${repo}/issues`,
             'POST',
