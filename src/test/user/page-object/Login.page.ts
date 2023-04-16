@@ -10,6 +10,22 @@ class LoginPage {
         this.browser = browser
     }
 
+    public async login(user: UserModel): Promise<void> {
+        await this.setLogin(user.login)
+        await this.setPassword(user.password)
+        await this.submit()
+    }
+
+    public massageDisplayed(): Promise<boolean> {
+        Reporter.addStep('Проверить отображение сообщения об ошибке логинации')
+        return this.getErrorMassage().isDisplayed()
+    }
+
+    public async open(): Promise<void> {
+        Reporter.addStep('Подождать открытия страницы логинации')
+        await this.browser.url(this.url)
+    }
+
     public async setLogin(login: string): Promise<void> {
         Reporter.addStep('Подождать отображения поля Login')
         await this.getLoginField().waitForDisplayed({
@@ -28,29 +44,13 @@ class LoginPage {
         await this.getPasswordField().setValue(password)
     }
 
-    public async login(): Promise<void> {
+    public async submit(): Promise<void> {
         Reporter.addStep('Подождать кликабельности кнопки Login')
         await this.getLoginButton().waitForClickable({
             timeoutMsg: 'Login button was not clickable'
         })
         Reporter.addStep('Залогиниться')
         await this.getLoginButton().click()
-    }
-
-    public async loginInAccount(user: UserModel): Promise<void> {
-        await this.setLogin(user.login)
-        await this.setPassword(user.password)
-        await this.login()
-    }
-
-    public massageDisplayed(): Promise<boolean> {
-        Reporter.addStep('Проверить отображение сообщения об ошибке логинации')
-        return this.getErrorMassage().isDisplayed()
-    }
-
-    public async open(): Promise<void> {
-        Reporter.addStep('Подождать открытия страницы логинации')
-        await this.browser.url(this.url)
     }
 
     private getErrorMassage(): ChainablePromiseElement<WebdriverIO.Element> {

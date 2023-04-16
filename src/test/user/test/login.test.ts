@@ -21,7 +21,7 @@ describe('Login form', () => {
     it('User should be log in by login', async () => {
         await loginPage.setLogin(user.login)
         await loginPage.setPassword(user.password)
-        await loginPage.login()
+        await loginPage.submit()
 
         await mainPage.openUserMenu()
         expect(await mainPage.getUserLoginText()).toEqual(user.login)
@@ -30,7 +30,7 @@ describe('Login form', () => {
     it('User should be log in by email', async () => {
         await loginPage.setLogin(user.email)
         await loginPage.setPassword(user.password)
-        await loginPage.login()
+        await loginPage.submit()
 
         await mainPage.openUserMenu()
         expect(await mainPage.getUserLoginText()).toEqual(user.login)
@@ -39,16 +39,15 @@ describe('Login form', () => {
     it('User should not be log in. Invalid email', async () => {
         await loginPage.setLogin(INVALID_EMAIL)
         await loginPage.setPassword(user.password)
-        await loginPage.login()
+        await loginPage.submit()
 
         expect(await loginPage.massageDisplayed()).toEqual(true)
     })
 
     it('User should not be log in. Password is not filled', async () => {
-        //const invalidPassword = '' //вынести в отдельную папку common (отдельная data для всех тестов) ГОТОВО
         await loginPage.setLogin(user.email)
         await loginPage.setPassword(EMPTY_VALUE)
-        await loginPage.login()
+        await loginPage.submit()
 
         expect(await loginPage.massageDisplayed()).toEqual(true)
     })

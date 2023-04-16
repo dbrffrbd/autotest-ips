@@ -6,7 +6,7 @@ import { userData } from '../../user/data/user.data'
 import { ResonForLocking, IssueStatus, createIssueData } from '../../issues/data/issues.data'
 import { MainPage } from '../../user/page-object/Main.page'
 import { LOGIN, REPO } from '../../../../credentials'
-import { IssueAPIService } from '../../../common/api/api-service/issueAPIService'
+import { IssueAPIService } from '../../../common/api/api-service/IssueAPIService'
 
 describe('Issues page', () => {
     let loginPage: LoginPage
@@ -20,7 +20,7 @@ describe('Issues page', () => {
         loginPage = new LoginPage(browser)
         mainPage = new MainPage(browser)
         await loginPage.open()
-        await loginPage.loginInAccount(user)
+        await loginPage.login(user)
         await mainPage.openUserMenu()
     })
 

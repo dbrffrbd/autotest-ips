@@ -15,6 +15,10 @@ class GitAPIProvider {
         }
     }
 
+    public getHeaders(): AxiosRequestHeaders {
+        return this.headers
+    }
+
     public sendRequest<T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
         if (this.isSuccessful) {
             return axios(config)
@@ -25,7 +29,7 @@ class GitAPIProvider {
             .catch(error => error.response)
     }
 
-    protected static configureRequest(
+    public static configureRequest(
         methodUrl: string,
         method: Method,
         requestHeaders: AxiosRequestHeaders,

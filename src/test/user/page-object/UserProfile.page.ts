@@ -8,24 +8,20 @@ class UserProfile {
         this.browser = browser
     }
 
-    public async open(): Promise<void> {
-        await this.browser.url(this.url)
-    }
-
     public getUserBioСontents(): Promise<string> {
         return this.getUserBio().getText()
     }
 
-    public async getUserNameСontents(): Promise<string> {
-        await this.getUserName().waitForExist({
-            timeoutMsg: 'User name does not exist'
-        })
-        return this.getUserName().getText()
+    public getValueInFieldName(): Promise<string> {
+        return this.getNameFiled().getValue()
     }
 
-    // либо удалить либо перепиать без инверироания результата
-    public async isNoUserName(): Promise<boolean> {
-        return this.getUserName().isExisting()
+    public isExistPronouns(): Promise<boolean> {
+        return this.getUserPronouns().isExisting()
+    }
+
+    public async open(): Promise<void> {
+        await this.browser.url(this.url)
     }
 
     public async openEditProfile(): Promise<void> {
@@ -35,21 +31,11 @@ class UserProfile {
         await this.getButtonEditProfile().click()
     }
 
-    public getValueInFieldName(): Promise<string> {
-        return this.getNameFiled().getValue()
-    }
-
-    //отсортировать методы
-    public isExistPronouns(): Promise<boolean> {
-        return this.getUserPronouns().isExisting()
-    }
-
-    private getUserBio(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "p-note")]')
-    }
-
-    private getUserName(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "p-name")]')
+    public async selectUserName(): Promise<string> {
+        await this.getUserName().waitForExist({
+            timeoutMsg: 'User name does not exist'
+        })
+        return this.getUserName().getText()
     }
 
     private getButtonEditProfile(): ChainablePromiseElement<WebdriverIO.Element> {
@@ -58,6 +44,14 @@ class UserProfile {
 
     private getNameFiled(): ChainablePromiseElement<WebdriverIO.Element> {
         return this.browser.$('//*[@id="user_profile_name"]')
+    }
+
+    private getUserBio(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[contains(@class, "p-note")]')
+    }
+
+    private getUserName(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[contains(@class, "p-name")]')
     }
 
     private getUserPronouns(): ChainablePromiseElement<WebdriverIO.Element> {

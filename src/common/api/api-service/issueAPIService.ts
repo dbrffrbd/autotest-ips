@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import { IssueModel } from "../../../test/issues/model/issues.model"
 import { IssueAPIProvider } from "../api-provider/IssueAPIProvider"
-import { CreateIssueRequest, IssueAPIDataProvider } from "../api-data.provider/issueAPIDataProvider"
+import { CreateIssueRequest, IssueAPIDataProvider } from "../api-data.provider/IssueAPIDataProvider"
 
 type CreateIssueResponse = {
     id: number,
@@ -23,6 +23,19 @@ class IssueAPIService {
             return response
         } catch (error) {
             throw new Error(`Create issue failed ${error}`)
+        }
+    }
+
+    public static async listRepositoryIssues(
+        owner: string,
+        repo: string,
+    ): Promise<AxiosResponse<CreateIssueResponse>> {
+        try {
+            const issueAPIProvider: IssueAPIProvider = new IssueAPIProvider()
+            const response: AxiosResponse<CreateIssueResponse> = await issueAPIProvider.listRepositoryIssues(owner, repo)
+            return response
+        } catch (error) {
+            throw new Error(`Get list repository issue failed ${error}`)
         }
     }
 }

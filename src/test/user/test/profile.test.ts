@@ -7,6 +7,7 @@ import { EMPTY_VALUE } from '../../../common/data/tests.data'
 import { UserAPIService, UserResponse } from '../../../common/api/api-service/UserAPIService'
 import { AxiosResponse } from 'axios'
 import { emptyData } from "../../user/data/user.data"
+import { MainPage } from '../page-object/Main.page'
 
 describe('Public profile', () => {
     let loginPage: LoginPage
@@ -19,11 +20,11 @@ describe('Public profile', () => {
         loginPage = new LoginPage(browser)
         publicProfile = new PublicProfile(browser)
         userProfile = new UserProfile(browser)
+        const mainPage = new MainPage(browser)
 
         await loginPage.open()
-        await loginPage.loginInAccount(user)
-        // зачем пауза?
-        await browser.pause(8000)
+        await loginPage.login(user)
+        await mainPage.openUserMenu()
 
         await publicProfile.open()
         await publicProfile.selectPronoun(PronounsType.NOTSPECIFY)
@@ -38,42 +39,36 @@ describe('Public profile', () => {
     it('User should change and save name', async () => {
         await publicProfile.setUserName(user.name)
         await publicProfile.savePublicProfileChanges()
-        await publicProfile.viewProfile()
+        await userProfile.open()
 
-        expect(await userProfile.getUserNameСontents()).toEqual(user.name)
+        expect(await userProfile.selectUserName()).toEqual(user.name)
     })
 
     it('User should save an empty name', async () => {
         await publicProfile.setUserName(EMPTY_VALUE)
         await publicProfile.savePublicProfileChanges()
-        await publicProfile.viewProfile()
+        await userProfile.open()
         await userProfile.openEditProfile()
 
-        //Вернуть expect(await userProfile.getUserNameСontents()).toEqual(EMPTY_VALUE)
-        expect(await userProfile.isNoUserName()).toEqual(true)
+        expect(await userProfile.selectUserName()).toEqual(EMPTY_VALUE)
     })
 
     it('The field Public Email should not be clickable', async () => {
-        expect(await publicProfile.checkingFieldLock()).toEqual(false)
+        expect(await publicProfile.isFieldLock()).toEqual(false)
     })
 
 
-    //переименовать на ожидаемый результат
-    //long bio text should be cut and save
-    it('User should be change and save long invalid text in Bio', async () => {
+    it('Long bio text should be cut and save', async () => {
         const longTextBio: string = `${user.textBio}а`
         await publicProfile.setBio(longTextBio)
         await publicProfile.savePublicProfileChanges()
-        //await publicProfile.viewProfile()
-
         await userProfile.open()
+
         expect(await userProfile.getUserBioСontents()).toEqual(user.textBio)
     })
 
-    // User pronoun should be equal value she/her
-    it('User must save pronouns she/her', async () => {
-        //метод не универсальный ГОТОВО
-        await publicProfile.selectPronoun(user.pornoun) //подготовить аккаунт к нужному состоянию (ДОБАВИТЬ В Before выключение выбранного местоимения) ГОТОВО
+    it('User pronoun should be equal value she/her', async () => {
+        await publicProfile.selectPronoun(user.pornoun) //
         await publicProfile.savePublicProfileChanges()
         await userProfile.open()
 
@@ -84,7 +79,7 @@ describe('Public profile', () => {
         await publicProfile.uploadFile(user.avatar)
         await browser.pause(2000)
 
-        expect(await publicProfile.checkMassagePicture()).toEqual(true)
+        expect(await publicProfile.isMessagePicture()).toEqual(true)
     })
 
     afterEach(async () => {

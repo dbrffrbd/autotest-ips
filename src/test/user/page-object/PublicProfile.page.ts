@@ -9,12 +9,16 @@ class PublicProfile {
         this.browser = browser
     }
 
-    public checkMassagePicture(): Promise<boolean> {
-        return this.getSetMassage().isDisplayed()
+    public getValueExpectPronoun(pronoun: PronounsType): Promise<string> {
+        return this.getPronoun(pronoun).getValue()
     }
-    //isFieldLock
-    public checkingFieldLock(): Promise<boolean> {
+
+    public isFieldLock(): Promise<boolean> {
         return this.getPublicEmail().isClickable()
+    }
+
+    public isMessagePicture(): Promise<boolean> {
+        return this.getSetMassage().isDisplayed()
     }
 
     public async open(): Promise<void> {
@@ -34,13 +38,10 @@ class PublicProfile {
         })
         await this.getPronouns().click()
 
-        //проверить на кликабельность
+        await this.getPronoun(pronoun).waitForClickable({
+            timeoutMsg: 'Pronoun not clickable'
+        })
         await this.getPronoun(pronoun).click()
-    }
-
-    // надо отсортировать мньоды по алфавиту
-    public getValueExpectPronoun(pronoun: PronounsType): Promise<string> {
-        return this.getPronoun(pronoun).getValue()
     }
 
     public async setBio(textBio: string): Promise<void> {
@@ -60,43 +61,14 @@ class PublicProfile {
         await showHiddenFileInput(this.browser)
         const file: string = await this.browser.uploadFile(filePath)
         await this.getInputFile().setValue(file)
-        // дождаться кликабельности
-        await this.getSetPictureButton().click()
-    }
-
-    public async viewProfile(): Promise<void> {
-        await this.getViewProfileButton().waitForClickable({
-            timeoutMsg: 'Link in massage "Profile updated successfully" was not clickable'
+        await this.getSetPictureButton().waitForClickable({
+            timeoutMsg: 'Set picture button was not clickable'
         })
-        await this.getViewProfileButton().click()
+        await this.getSetPictureButton().click()
     }
 
     private getBio(): ChainablePromiseElement<WebdriverIO.Element> {
         return this.browser.$('//*[@id="user_profile_bio"]')
-    }
-
-    private getPronouns(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[@id="user_profile_pronouns_select"]')
-    }
-
-    private getPronoun(pronoun: PronounsType): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$(`//*[@id="user_profile_pronouns_select"]/option[${pronoun}]`)
-    }
-
-    private getPublicEmail(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[@id="user_profile_email"]')
-    }
-
-    private getUpdateProfileButton(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "Button--primary")]')
-    }
-
-    private getUserName(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[@id="user_profile_name"]')
-    }
-
-    private getViewProfileButton(): ChainablePromiseElement<WebdriverIO.Element> {
-        return this.browser.$('//*[contains(@class, "js-flash-alert")]/a')
     }
 
     private getInputFile(): ChainablePromiseElement<WebdriverIO.Element> {
@@ -107,8 +79,28 @@ class PublicProfile {
         return this.browser.$('//*[@id="avatar-crop-form"]//*[@type="submit"]')
     }
 
+    private getPronoun(pronoun: PronounsType): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$(`//*[@id="user_profile_pronouns_select"]/option[${pronoun}]`)
+    }
+
+    private getPronouns(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[@id="user_profile_pronouns_select"]')
+    }
+
+    private getPublicEmail(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[@id="user_profile_email"]')
+    }
+
     private getSetMassage(): ChainablePromiseElement<WebdriverIO.Element> {
         return this.browser.$('//*[@id="js-flash-container"]')
+    }
+
+    private getUpdateProfileButton(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[contains(@class, "Button--primary")]')
+    }
+
+    private getUserName(): ChainablePromiseElement<WebdriverIO.Element> {
+        return this.browser.$('//*[@id="user_profile_name"]')
     }
 }
 

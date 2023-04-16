@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { UserModel } from "../../../test/user/model/user.model";
 import { UserAPIProvider } from "../api-provider/UserAPIProvider";
-import { UpdateUserRequest, UserAPIDataProvider } from "../api-data.provider/userAPIDataProvider";
+import { UpdateUserRequest, UserAPIDataProvider } from "../api-data.provider/UserAPIDataProvider";
 
 type UserResponse = {
     login: string,
